@@ -59,7 +59,7 @@ func DefaultObservabilityConfig() *ObservabilityConfig{
 	}
 }
 
-func (c *ObservabilityConfig) validate() error{
+func (c *ObservabilityConfig) Validate() error{
 	if c.ServiceName==""{
 		return fmt.Errorf("service name is required")
 	}

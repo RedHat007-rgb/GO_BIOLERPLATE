@@ -18,6 +18,7 @@ type Config struct{
 	DataBase DataBaseConfig `koanf:"database" validate:"required"`
 	Auth AuthConfig `koanf:"auth" validate:"required"`
 	Redis RedisConfig `koanf:"redis" validate:"required"`
+	Observability *ObservabilityConfig `koanf:"observability"`
 }
 
 type Primary struct{
@@ -68,19 +69,31 @@ func LoadConfig()(*Config,error){
 	if(err!=nil){
 		logger.Fatal().Err(err).Msg("couldnot load initial variables")
 	}
-	mainconfig:=&Config{}
-	err=k.Unmarshal("",mainconfig)
+	mainConfig:=&Config{}
+	err=k.Unmarshal("",mainConfig)
 	if(err!=nil){
 		logger.Fatal().Err(err).Msg("couldnot unmarshall main config")
 	}
 
 	validate:=validator.New()
-	err=validate.Struct(mainconfig)
+	err=validate.Struct(mainConfig)
 	if(err!=nil){
 		logger.Fatal().Err(err).Msg("config validation failed....")
 	}
 
-	return mainconfig,nil
+
+	if mainConfig.Observability==nil{
+		mainConfig.Observability=DefaultObservabilityConfig()
+	}
+
+	mainConfig.Observability.ServiceName="boilerplate"
+	mainConfig.Observability.Environment=mainConfig.Primary.Env
+
+	if err:=mainConfig.Observability.Validate(); err!=nil{
+		logger.Fatal().Err(err).Msg("invalid observability config")
+	}
+
+	return mainConfig,nil
 }
 
 
