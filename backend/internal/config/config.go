@@ -72,7 +72,7 @@ func LoadConfig()(*Config,error){
 	mainConfig:=&Config{}
 	err=k.Unmarshal("",mainConfig)
 	if(err!=nil){
-		logger.Fatal().Err(err).Msg("couldnot unmarshall main config")
+		logger.Fatal().Err(err).Msg("could not unmarshall main config")
 	}
 
 	validate:=validator.New()
